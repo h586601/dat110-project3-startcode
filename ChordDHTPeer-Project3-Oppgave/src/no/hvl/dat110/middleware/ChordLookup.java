@@ -70,7 +70,8 @@ public class ChordLookup {
 			NodeInterface finger = Util.getProcessStub(nodeI.getNodeName(), nodeI.getPort());
 			
 			// check that finger is a member of the set {nodeID+1,...,ID-1} i.e. (nodeID+1 <= finger <= key-1) using the ComputeLogic
-			boolean isMember = Util.computeLogic(finger.getNodeID(), node.getNodeID().add(new BigInteger("1")), key.subtract(new BigInteger("1")));
+			BigInteger oneInt = new BigInteger("1");
+			boolean isMember = Util.computeLogic(finger.getNodeID(), node.getNodeID().add(oneInt), key.subtract(oneInt));
 			// if logic returns true, then return the finger (means finger is the closest to key)
 			if(isMember) {
 				return finger;
