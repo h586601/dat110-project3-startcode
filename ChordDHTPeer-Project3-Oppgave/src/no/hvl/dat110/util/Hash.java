@@ -16,7 +16,6 @@ import java.security.NoSuchProviderException;
 public class Hash {
 
 	private static BigInteger hashint;
-	private static MessageDigest md;
 
 	/**
 	 * Hash a given string with MD5 and returns the result as a BigInteger
@@ -27,19 +26,21 @@ public class Hash {
 	public static BigInteger hashOf(String entity) {
 
 		// we use MD5 with 128 bits digest
-		// compute the hash of the input 'entity'
-		// convert the hash into hex format
-		// convert the hex into BigInteger
+		MessageDigest md = null;
+		
 		try {
 			md = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-
+		
+		// compute the hash of the input 'entity'
 		byte[] b = md.digest(entity.getBytes());
 
+		// convert the hash into hex format
 		String hex = toHex(b);
 
+		// convert the hex into BigInteger
 		hashint = new BigInteger(hex, 16);
 
 		return hashint;
@@ -51,7 +52,7 @@ public class Hash {
 	 * @return
 	 */
 	public static BigInteger addressSize() {
-
+		
 		int numberOfBits = bitSize();
 
 		// compute the address size = 2 ^ number of bits
@@ -68,9 +69,14 @@ public class Hash {
 	 */
 	public static int bitSize() {
 
-		int digestlen = 0;
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
 
-		digestlen = md.getDigestLength();
+		int digestlen = md.getDigestLength();
 
 		return digestlen * 8;
 	}

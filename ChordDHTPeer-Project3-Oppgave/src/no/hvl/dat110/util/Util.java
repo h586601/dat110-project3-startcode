@@ -35,17 +35,31 @@ public class Util {
 	 * @param lower
 	 * @param upper
 	 * @return true if (lower <= id <= upper) or false otherwise
+	 * 
+	 * This task is explained very poorly. And it is not the same as the other exercise about DHT
 	 */
 	public static boolean computeLogic(BigInteger id, BigInteger lower, BigInteger upper) {
 		
 		// a formula to check whether an id falls within the set {lower, upper} using the address size as our bound (modulos operation)
 		// it modifies 'upper' and 'id' when lower > upper e.g. set (6, 2) in mod 10 = {6, 7, 8, 9, 0, 1, 2}
-		
-		// implement: read the descriptions above
-		boolean cond = false;
+		boolean cond = lower.compareTo(id) <= 0 && id.compareTo(upper) <= 0;
 
+		BigInteger modulo = Hash.addressSize();
+		
+		if(lower.compareTo(upper) > 0) {
+			BigInteger newUpper = upper.add(modulo);
+			
+			cond = lower.compareTo(id) <= 0 && id.compareTo(newUpper) <= 0;
+			
+			if(id.compareTo(upper) <= 0) {
+				BigInteger newId = id.add(modulo);
+				
+				cond = lower.compareTo(newId) <= 0 && newId.compareTo(newUpper) <= 0;
+			}
+		}
 		
 		return cond;
+		
 	}
 	
 	public static List<String> toString(List<NodeInterface> list) throws RemoteException {
