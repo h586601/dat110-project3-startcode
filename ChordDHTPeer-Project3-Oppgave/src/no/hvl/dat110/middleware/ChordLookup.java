@@ -30,37 +30,52 @@ public class ChordLookup {
 		// ask this node to find the successor of key
 		
 		// get the successor of the node
+		NodeInterface successor = node.getSuccessor();
 		
 		// get the stub for this successor (Util.getProcessStub())
+		NodeInterface stub = Util.getProcessStub(successor.getNodeName(), successor.getPort());
 		
 		// check that key is a member of the set {nodeid+1,...,succID} i.e. (nodeid+1 <= key <= succID) using the ComputeLogic
+		boolean isMember = Util.computeLogic(key, node.getNodeID().add(new BigInteger("1")), stub.getNodeID());
 		
 		// if logic returns true, then return the successor
-		
-		// if logic returns false; call findHighestPredecessor(key)
-		
-		// do return highest_pred.findSuccessor(key) - This is a recursive call until logic returns true
-				
-		return null;					
+		if(isMember) {
+			return successor;
+		} else {
+			// else; call findHighestPredecessor(key)
+			NodeInterface highest_pred = findHighestPredecessor(key);
+			
+			// do return highest_pred.findSuccessor(key) - This is a recursive call until logic returns true
+			return highest_pred.getSuccessor();
+		}
+								
 	}
 	
 	/**
 	 * This method makes a remote call. Invoked from a local client
+	 * 
 	 * @param ID BigInteger
-	 * @return
+	 * @return NodeInterface
 	 * @throws RemoteException
 	 */
 	private NodeInterface findHighestPredecessor(BigInteger key) throws RemoteException {
 		
 		// collect the entries in the finger table for this node
+		List<NodeInterface> fingerTable = node.getFingerTable();
 		
 		// starting from the last entry, iterate over the finger table
-		
-		// for each finger, obtain a stub from the registry
-		
-		// check that finger is a member of the set {nodeID+1,...,ID-1} i.e. (nodeID+1 <= finger <= key-1) using the ComputeLogic
-		
-		// if logic returns true, then return the finger (means finger is the closest to key)
+		for(int i = fingerTable.size()-1; i >= 0; i--) {
+			// for each finger, obtain a stub from the registry
+			NodeInterface nodeI = fingerTable.get(i);
+			NodeInterface finger = Util.getProcessStub(nodeI.getNodeName(), nodeI.getPort());
+			
+			// check that finger is a member of the set {nodeID+1,...,ID-1} i.e. (nodeID+1 <= finger <= key-1) using the ComputeLogic
+			boolean isMember = Util.computeLogic(finger.getNodeID(), node.getNodeID().add(new BigInteger("1")), key.subtract(new BigInteger("1")));
+			// if logic returns true, then return the finger (means finger is the closest to key)
+			if(isMember) {
+				return finger;
+			}
+		}
 		
 		return (NodeInterface) node;			
 	}
