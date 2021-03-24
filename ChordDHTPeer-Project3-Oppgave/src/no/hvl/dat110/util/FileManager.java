@@ -73,22 +73,29 @@ public class FileManager {
 
 		// Task1: Given a filename, make replicas and distribute them to all active
 		// peers such that: pred < replica <= peer
-
+		
 		// Task2: assign a replica as the primary for this file. Hint, see the slide
 		// (project 3) on Canvas
 
 		// create replicas of the filename
+		createReplicaFiles();
 
 		// iterate over the replicas
+		for(BigInteger replica : replicafiles) {
+			
+			// for each replica, find its successor by performing findSuccessor(replica)
+			NodeInterface succ = chordnode.findSuccessor(replica);
+			
+			// call the addKey on the successor and add the replica
+			succ.addKey(replica);
+			
+			// call the saveFileContent() on the successor
+			succ.saveFileContent(filename, replica, bytesOfFile, false);
 
-		// for each replica, find its successor by performing findSuccessor(replica)
-
-		// call the addKey on the successor and add the replica
-
-		// call the saveFileContent() on the successor
-
-		// increment counter
-
+			// increment counter
+			counter++;
+		}
+		
 		return counter;
 	}
 
