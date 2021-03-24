@@ -76,6 +76,8 @@ public class FileManager {
 		
 		// Task2: assign a replica as the primary for this file. Hint, see the slide
 		// (project 3) on Canvas
+		Random rnd= new Random();
+		int index= rnd.nextInt(Util.numReplicas-1);
 
 		// create replicas of the filename
 		createReplicaFiles();
@@ -90,7 +92,12 @@ public class FileManager {
 			succ.addKey(replica);
 			
 			// call the saveFileContent() on the successor
-			succ.saveFileContent(filename, replica, bytesOfFile, false);
+			// server at index=counter will be our primary for this file
+			if(counter== index)
+				succ.saveFileContent(filename, replica, bytesOfFile, true); 
+			// save the file in the memory of the peer
+			else
+				succ.saveFileContent(filename, replica, bytesOfFile, false);
 
 			// increment counter
 			counter++;
