@@ -66,15 +66,15 @@ public class ChordLookup {
 		// starting from the last entry, iterate over the finger table
 		for(int i = fingerTable.size()-1; i >= 0; i--) {
 			// for each finger, obtain a stub from the registry
-			NodeInterface nodeI = fingerTable.get(i);
-			NodeInterface finger = Util.getProcessStub(nodeI.getNodeName(), nodeI.getPort());
+			NodeInterface finger = fingerTable.get(i);
+			NodeInterface fingStub = Util.getProcessStub(finger.getNodeName(), finger.getPort());
 			
 			// check that finger is a member of the set {nodeID+1,...,ID-1} i.e. (nodeID+1 <= finger <= key-1) using the ComputeLogic
 			BigInteger oneInt = new BigInteger("1");
-			boolean isMember = Util.computeLogic(finger.getNodeID(), node.getNodeID().add(oneInt), key.subtract(oneInt));
+			boolean isMember = Util.computeLogic(fingStub.getNodeID(), node.getNodeID().add(oneInt), key.subtract(oneInt));
 			// if logic returns true, then return the finger (means finger is the closest to key)
 			if(isMember) {
-				return finger;
+				return fingStub;
 			}
 		}
 		
