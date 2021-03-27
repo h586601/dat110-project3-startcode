@@ -56,10 +56,10 @@ public class Hash {
 		int numberOfBits = bitSize();
 
 		// compute the address size = 2 ^ number of bits
-		BigInteger two = new BigInteger("2");
-		BigInteger addressSize = two.pow(numberOfBits);
+		BigInteger adrSize = BigInteger.valueOf(2).pow(numberOfBits);
 
-		return addressSize;
+
+		return adrSize;
 	}
 
 	/**
