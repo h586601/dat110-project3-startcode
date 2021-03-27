@@ -76,14 +76,15 @@ public class FileManager {
 		
 		// Task2: assign a replica as the primary for this file. Hint, see the slide
 		// (project 3) on Canvas
-		Random rnd= new Random();
-		int index= rnd.nextInt(Util.numReplicas-1);
+		Random rnd = new Random();
+		int index = rnd.nextInt(Util.numReplicas);
 
 		// create replicas of the filename
 		createReplicaFiles();
 
 		// iterate over the replicas
-		for(BigInteger replica : replicafiles) {
+		for(BigInteger replica : this.replicafiles) {
+			
 			
 			// for each replica, find its successor by performing findSuccessor(replica)
 			NodeInterface succ = chordnode.findSuccessor(replica);
@@ -122,21 +123,22 @@ public class FileManager {
 		createReplicaFiles();
 
 		// it means, iterate over the replicas of the file
-		for(BigInteger replica : replicafiles) {
+		for(BigInteger replica : this.replicafiles) {
 			
 			// for each replica, do findSuccessor(replica) that returns successor s.
 			NodeInterface s = chordnode.findSuccessor(replica);
 			
 			// get the metadata (Message) of the replica from the successor, s (i.e. active
 			// peer) of the file
-			Message message = s.getFilesMetadata(replica);
+			Message message = s.getFilesMetadata().get(replica);
 			
 			// save the metadata in the set succinfo.
 			succinfo.add(message);
+			
 		}
 
 		this.activeNodesforFile = succinfo;
-
+		
 		return succinfo;
 	}
 
