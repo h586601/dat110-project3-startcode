@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package no.hvl.dat110.middleware;
 
@@ -33,6 +33,7 @@ public class ChordLookup {
 		NodeInterface succ = node.getSuccessor();
 
 		// get the stub for this successor (Util.getProcessStub())
+		// Note to self: Stub is key to get access to remote methods
 		NodeInterface succStub = Util.getProcessStub(succ.getNodeName(), succ.getPort());
 
 		// check that key is a member of the set {nodeid+1,...,succID} i.e. (nodeid+1 <=
@@ -55,7 +56,7 @@ public class ChordLookup {
 
 	/**
 	 * This method makes a remote call. Invoked from a local client
-	 * 
+	 *
 	 * @param ID BigInteger
 	 * @return
 	 * @throws RemoteException
@@ -82,7 +83,7 @@ public class ChordLookup {
 			// key)
 		}
 
-		return (NodeInterface) this.node;
+		return this.node;
 	}
 
 	public void copyKeysFromSuccessor(NodeInterface succ) {
@@ -114,7 +115,7 @@ public class ChordLookup {
 					System.out.println("fileID=" + fileID + " | nodeID= " + nodeID);
 					node.addKey(fileID); // re-assign file to this successor node
 					Message msg = succ.getFilesMetadata().get(fileID);
-					node.saveFileContent(msg.getNameOfFile(), fileID, msg.getBytesOfFile(), msg.isPrimaryServer()); 
+					node.saveFileContent(msg.getNameOfFile(), fileID, msg.getBytesOfFile(), msg.isPrimaryServer());
 					succ.removeKey(fileID); // remove the file key from the successor
 					succ.getFilesMetadata().remove(fileID); // also remove the saved file from memory
 				}

@@ -25,52 +25,36 @@ public class Util {
 	public static String activeIP = null;
 	public static int numReplicas = 4;
 
+
 	/**
-	 * This method computes (lower <= id <= upper). To use this method to compute
-	 * (lower < id <= upper), ensure that the calling method increased the lower
-	 * param by 1. To use this method to compute (lower <= id < upper), ensure that
-	 * the calling method increased the upper param by 1. To use this method to
-	 * compute (lower < id < upper), ensure that the calling method increased both
-	 * the lower and upper params by 1.
-	 * 
+	 * My version of the computeLogic
+	 *
+	 * Checking if lower <= id <= upper
+	 *
 	 * @param id
 	 * @param lower
 	 * @param upper
-	 * @return true if (lower <= id <= upper) or false otherwise
-	 * 
-	 *         This task is explained very poorly. And it is not the same as the
-	 *         other exercise about DHT
+	 * @return boolean
 	 */
 	public static boolean computeLogic(BigInteger id, BigInteger lower, BigInteger upper) {
 
-		// a formula to check whether an id falls within the set {lower, upper} using
-		// the address size as our bound (modulos operation)
-		// it modifies 'upper' and 'id' when lower > upper e.g. set (6, 2) in mod 10 =
-		// {6, 7, 8, 9, 0, 1, 2}
+		boolean cond = lower.compareTo(id) <= 0 && id.compareTo(upper) <= 0;
+
 		BigInteger modulo = Hash.addressSize();
-		BigInteger nullInt = new BigInteger("0");
 
-		boolean cond = false;
-
-		// implement: read the descriptions above
-
-		// om lower > upper
 		if (lower.compareTo(upper) > 0) {
-			BigInteger nyUpper = upper.add(modulo);
+			BigInteger newUpper = upper.add(modulo);
 
-			cond = lower.compareTo(id) <= 0 && id.compareTo(nyUpper) <= 0;
+			cond = lower.compareTo(id) <= 0 && id.compareTo(newUpper) <= 0;
 
-			boolean cond2 = false;
-			// om id var "etter 0" og mindre enn den gamle upper (?)
-			if (id.compareTo(nullInt) >= 0 && id.compareTo(upper) <= 0) {
-				BigInteger nyId = id.add(modulo);
-				cond2 = lower.compareTo(nyId) <= 0 && nyId.compareTo(nyUpper) <= 0;
+			if (id.compareTo(upper) <= 0) {
+				BigInteger newId = id.add(modulo);
+
+				cond = lower.compareTo(newId) <= 0 && newId.compareTo(newUpper) <= 0;
 			}
-			return cond || cond2;
-
-		} else {
-			return lower.compareTo(id) <= 0 && id.compareTo(upper) <= 0;
 		}
+
+		return cond;
 
 	}
 
@@ -103,7 +87,7 @@ public class Util {
 
 	/**
 	 * This method is used when processes are running on a single computer
-	 * 
+	 *
 	 * @return the registry for the found ip
 	 * @throws RemoteException
 	 * @throws NumberFormatException

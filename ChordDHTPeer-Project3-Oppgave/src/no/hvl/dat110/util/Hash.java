@@ -27,13 +27,13 @@ public class Hash {
 
 		// we use MD5 with 128 bits digest
 		MessageDigest md = null;
-		
+
 		try {
 			md = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-		
+
 		// compute the hash of the input 'entity'
 		byte[] b = md.digest(entity.getBytes());
 
@@ -52,12 +52,11 @@ public class Hash {
 	 * @return
 	 */
 	public static BigInteger addressSize() {
-		
+
 		int numberOfBits = bitSize();
 
 		// compute the address size = 2 ^ number of bits
 		BigInteger adrSize = BigInteger.valueOf(2).pow(numberOfBits);
-
 
 		return adrSize;
 	}

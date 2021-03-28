@@ -19,7 +19,6 @@ import java.util.Set;
 
 import no.hvl.dat110.middleware.Message;
 import no.hvl.dat110.rpc.interfaces.NodeInterface;
-import no.hvl.dat110.util.Hash;
 
 public class FileManager {
 
@@ -65,30 +64,32 @@ public class FileManager {
 	}
 
 	/**
-	 * 
+	 * Given a filename, makes replicas and distributes them to all active peers
+	 * such that pred < replica <= peer
+	 *
 	 * @param bytesOfFile
 	 * @throws RemoteException
 	 */
 	public int distributeReplicastoPeers() throws RemoteException {
-int counter = 0;
-		
-		//TODO test...
-    	
-    	// Task1: Given a filename, make replicas and distribute them to all active peers such that: pred < replica <= peer
-    	
-		// Task2: assign a replica as the primary for this file. Hint, see the slide (project 3) on Canvas
+
+		int counter = 0;
+
+		// Task2: assign a replica as the primary for this file. Hint, see the slide
+		// (project 3) on Canvas
 		Random rnd = new Random();
-		int index = rnd.nextInt(Util.numReplicas); //eller -1? nextInt er ikkje inklusiv på den oppgitte verdien
-    	
+		int index = rnd.nextInt(Util.numReplicas); // eller -1? nextInt er ikke inklusiv den oppgitte verdien
+
 		// create replicas of the filename
 		createReplicaFiles();
-    	
+
 		// iterate over the replicas
 		for (int i = 0; i < replicafiles.length; i++) {
+
 			BigInteger replica = replicafiles[i];
+
 			// for each replica, find its successor by performing findSuccessor(replica)
 			NodeInterface succ = chordnode.findSuccessor(replica);
-			
+
 			// call the addKey on the successor and add the replica
 			succ.addKey(replica);
 
@@ -98,17 +99,17 @@ int counter = 0;
 			} else {
 				succ.saveFileContent(filename, replica, bytesOfFile, false);
 			}
-			
+
 			// increment counter
 			counter++;
 		}
-		
+
 		return counter;
 	}
 
 	/**
 	 * Finds all the peers that hold a copy of this file based on the filename
-	 * 
+	 *
 	 * @param filename
 	 * @return list of active nodes having the replicas of this file
 	 * @throws RemoteException
@@ -118,53 +119,57 @@ int counter = 0;
 		this.filename = filename;
 		Set<Message> succinfo = new HashSet<Message>();
 		// Task: Given a filename, find all the peers that hold a copy of this file
-		
+
 		// generate the N replicas from the filename by calling createReplicaFiles()
 		createReplicaFiles();
-		
+
 		// it means, iterate over the replicas of the file
 		for (int i = 0; i < replicafiles.length; i++) {
 			// for each replica, do findSuccessor(replica) that returns successor s.
 			BigInteger replica = replicafiles[i];
 			NodeInterface succ = chordnode.findSuccessor(replica);
 
-			// get the metadata (Message) of the replica from the successor, s (i.e. active peer) of the file
+			// get the metadata (Message) of the replica from the successor, s (i.e. active
+			// peer) of the file
 			Message metadata = succ.getFilesMetadata(replica);
 
 			// save the metadata in the set succinfo.
 			succinfo.add(metadata);
 		}
-		
+
 		this.activeNodesforFile = succinfo;
-		
+
 		return succinfo;
 	}
 
 	/**
 	 * Find the primary server - Remote-Write Protocol
-	 * 
+	 *
 	 * @return
 	 */
 	public NodeInterface findPrimaryOfItem() {
 
 		// Task: Given all the active peers of a file (activeNodesforFile()), find which
 		// is holding the primary copy
+		NodeInterface primary = null;
 
 		// iterate over the activeNodesforFile
+		for (Message activePeer : activeNodesforFile) {
 
-		// for each active peer (saved as Message)
-
-		// use the primaryServer boolean variable contained in the Message class to
-		// check if it is the primary or not
-
+			// for each active peer (saved as Message)
+			// use the primaryServer boolean variable contained in the Message class to
+			// check if it is the primary or not
+			if (activePeer.isPrimaryServer()) {
+				primary = Util.getProcessStub(activePeer.getNodeIP(), activePeer.getPort());
+			}
+		}
 		// return the primary
-
-		return null;
+		return primary;
 	}
 
 	/**
 	 * Read the content of a file and return the bytes
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws NoSuchAlgorithmException
 	 */
